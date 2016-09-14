@@ -1,5 +1,46 @@
+<style>
+    .linkButton {
+         background: none;
+         border: none;
+         color: #0066ff;
+         text-decoration: underline;
+         cursor: pointer;
+    }
+</style>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#dialog-confirm").dialog();
+        $("#dialog-confirm").dialog("close");
+
+        $(".deleteButton").click(function () {
+            $deleteFormId = $(this).parents('form:first');
+            $("#dialog-confirm" ).dialog({
+                    resizable: false,
+                    height: "auto",
+                    width: 400,
+                    modal: true,
+                    close:true,
+                    buttons: {
+                        "Delete item": function() {
+                            $($deleteFormId).submit();
+                            $( this ).dialog( "close" );
+                        },
+                        Cancel: function() {
+                            $( this ).dialog( "close" );
+                        }
+                    }
+             });
+            $("#dialog-confirm").dialog("open");
+            event.preventDefault();
+        });
+    });
+</script>
+
 <?php
 // module/Album/view/album/album/index.phtml:
+
 
 $title = 'My albums';
 $this->headTitle($title);
@@ -14,6 +55,7 @@ $this->headTitle($title);
     <th>Title</th>
     <th>Artist</th>
     <th>&nbsp;</th>
+    <th>&nbsp;</th>
 </tr>
 <?php foreach ($albums as $album) : ?>
 <tr>
@@ -22,9 +64,25 @@ $this->headTitle($title);
     <td>
         <a href="<?php echo $this->url('album',
             array('action'=>'edit', 'id' => $album->id));?>">Edit</a>
-        <a href="<?php echo $this->url('album',
-            array('action'=>'delete', 'id' => $album->id));?>">Delete</a>
+    </td>
+    <td>
+        <?php
+            $url = $this->url('album', array(
+                'action' => 'delete',
+                'id'     => $album->id,
+            ));
+        ?>
+        <form action="<?php echo $url; ?>" method="post" id="deleteForm<?php $album->id ?>">
+            <input type="submit" class="deleteButton" name="delete" value="Delete" class="linkButton" />
+        </form>
     </td>
 </tr>
 <?php endforeach; ?>
+
 </table>
+
+<div id="dialog-confirm" title="Empty the recycle bin?">
+  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure you want to delete this item?</p>
+</div>
+
+

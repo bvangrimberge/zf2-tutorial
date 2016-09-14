@@ -10,6 +10,7 @@ namespace Album\Controller;
 
  use Album\Form\AlbumForm;
  use Album\Model\Album;
+ use Zend\Debug\Debug;
  use Zend\Mvc\Controller\AbstractActionController;
  use Zend\View\Model\ViewModel;
 
@@ -98,21 +99,13 @@ namespace Album\Controller;
 
          $request = $this->getRequest();
          if ($request->isPost()) {
-             $del = $request->getPost('del', 'No');
-
-             if ($del == 'Yes') {
-                 $id = (int) $request->getPost('id');
-                 $this->getAlbumTable()->deleteAlbum($id);
-             }
-
-             // Redirect to list of albums
-             return $this->redirect()->toRoute('album');
+             $this->getAlbumTable()->deleteAlbum($id);
          }
 
-         return array(
-             'id'    => $id,
-             'album' => $this->getAlbumTable()->getAlbum($id)
-         );
+         $viewModel = $this->indexAction();
+         $viewModel->setTemplate("album/index");
+         return $viewModel;
+
      }
 
      public function getAlbumTable()
